@@ -60,4 +60,4 @@ services:
       - elk
       - mongo
       - rmq
-    command: ["sh", "./run.sh"]
+    command: ["sh", "./wait.sh"]
