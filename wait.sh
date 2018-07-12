@@ -8,8 +8,6 @@ pingNow(){
     SERVER=$(echo $VAL | awk -F: '{print $1}')
     PORT=$(echo $VAL | awk -F: '{print $2}')
 
-    echo "$1, $2, $VAL"
-
     if [ $1 -lt `expr $2 - 1` ]; then
 
         $(nc -w 2 -v $SERVER $PORT </dev/null)
