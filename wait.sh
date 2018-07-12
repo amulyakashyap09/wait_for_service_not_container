@@ -1,26 +1,31 @@
 #!/bin/bash
 
-declare -a HOSTS=("ping -c 5 -p 27017 localhost" "ping -c 5 -p 9200 localhost" "ping -c 5 -p 5601 localhost" "ping -c 5 -p 15672 localhost")
+declare -a HOSTS=("localhost:27017" "localhost:9200" "localhost:5601" "localhost:15672")
 
-pingFunc() {
+pingNow(){
 
-    LIMIT=`expr $2 - 1`
-    LOSS="0.0%"
+    VAL=${HOSTS[$1]}
+    SERVER=$(echo $VAL | awk -F: '{print $1}')
+    PORT=$(echo $VAL | awk -F: '{print $2}')
 
-    if [ $1 -lt $LIMIT ]; then
-        HOST=${HOSTS[$1]}
-        output=$($HOST | grep 'loss'| awk -F, '{print $3}' | awk '{print $1;}')
+    echo "$1, $2, $VAL"
 
-        if [ $output != $LOSS ]; then
-            echo "Oops! ${HOST} is down. Please wait re-checking"
-            pingFunc $1 ${#HOSTS[@]}
-        else
-            pingFunc `expr $1 + 1` ${#HOSTS[@]}
-        fi
+    if [ $1 -lt `expr $2 - 1` ]; then
+
+        $(nc -w 2 -v $SERVER $PORT </dev/null)
         
+        if [ "$?" -ne 0 ]; then
+            echo "Connection to $SERVER on port $PORT failed"
+            testing $1 $2
+            # exit 1
+        else
+            echo "Connection to $SERVER on port $PORT succeeded"
+            testing `expr $1 + 1` $2
+            # exit 0
+        fi
     else
         echo "DONE!!! All services are UP"
     fi
 }
 
-pingFunc 0 ${#HOSTS[@]}
+pingNow 0 ${#HOSTS[@]}
