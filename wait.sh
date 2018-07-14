@@ -14,15 +14,17 @@ pingNow(){
         
         if [ "$?" -ne 0 ]; then
             echo "Connection to $SERVER on port $PORT failed"
-            testing $1 $2
+            sleep 2
+            pingNow $1 $2
             # exit 1
         else
             echo "Connection to $SERVER on port $PORT succeeded"
-            testing `expr $1 + 1` $2
+            pingNow `expr $1 + 1` $2
             # exit 0
         fi
     else
         echo "DONE!!! All services are UP"
+        ./healthMonitoring
     fi
 }
 
