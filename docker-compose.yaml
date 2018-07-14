@@ -60,4 +60,3 @@ services:
       - elk
       - mongo
       - rmq
-    command: ["sh", "./wait.sh"]
